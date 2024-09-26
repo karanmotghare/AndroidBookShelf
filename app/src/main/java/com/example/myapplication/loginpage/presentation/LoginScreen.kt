@@ -1,4 +1,4 @@
-package com.example.myapplication.loginpage
+package com.example.myapplication.loginpage.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,10 +36,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.myapplication.R
+import com.example.myapplication.loginpage.viewmodels.AuthViewModel
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     var emailAddress by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
     Column(
@@ -90,7 +91,9 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {}) {
+        Button(onClick = {
+            authViewModel.login(emailAddress.text,password.text)
+        }) {
             Text("Submit",
                 fontSize = 18.sp
                 )
@@ -168,8 +171,8 @@ fun CountryCodeDropdown(
     }
 }
 
-@Preview
-@Composable
-fun PreviewLoginScreen(){
-    LoginScreen()
-}
+//@Preview
+//@Composable
+//fun PreviewLoginScreen(){
+//    LoginScreen()
+//}
