@@ -110,7 +110,7 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
         Button(onClick = {
             authViewModel.signUp(emailAddress.text,password.text)
         }) {
-            Text("Signup",
+            Text("Sign up",
                 fontSize = 18.sp
             )
         }
