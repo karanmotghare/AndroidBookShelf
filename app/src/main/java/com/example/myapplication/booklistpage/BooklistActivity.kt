@@ -2,6 +2,8 @@ package com.example.myapplication.booklistpage
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -24,14 +26,30 @@ class BooklistActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_booklist)
-        binding.logoutBtn.setOnClickListener{
-            authViewModel.signOut()
-            when(authViewModel.authState.value){
-                is AuthState.Unauthenticated -> logout()
-                is AuthState.Error -> Toast.makeText(this, "something went wrong",
-                    Toast.LENGTH_SHORT).show()
-                else -> Unit
+        setSupportActionBar(binding.toolbar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_booklist,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                signOut()
+                true
             }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun signOut(){
+        authViewModel.signOut()
+        when (authViewModel.authState.value) {
+            is AuthState.Unauthenticated -> logout()
+            is AuthState.Error -> Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
+            else -> Unit
         }
     }
 
