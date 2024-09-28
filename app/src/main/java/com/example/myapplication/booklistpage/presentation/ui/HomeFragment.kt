@@ -55,6 +55,13 @@ class HomeFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        binding.yourBook.setOnClickListener{
+            val yourBookFragment = YourBookFragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, yourBookFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
