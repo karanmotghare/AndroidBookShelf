@@ -2,6 +2,7 @@ package com.example.myapplication.booklistpage.presentation.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.example.myapplication.LibraryResultEvent
 import com.example.myapplication.R
 import com.example.myapplication.booklistpage.data.models.BooklistDataModel
@@ -20,6 +20,8 @@ import com.example.myapplication.booklistpage.domain.usecases.BookListUseCase
 import com.example.myapplication.booklistpage.presentation.adapters.LibraryBookItemAdapter
 import com.example.myapplication.booklistpage.presentation.viewmodels.BookListViewModel
 import com.example.myapplication.booklistpage.presentation.viewmodels.BookListViewModelFactory
+import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModel
+import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModelFactory
 import com.example.myapplication.databinding.FragmentLibraryBinding
 import com.google.android.material.tabs.TabLayout
 
@@ -30,6 +32,7 @@ class LibraryFragment : Fragment() {
     private val bookByYear = mutableMapOf<Int, List<BooklistDataModel>>() // Year to anime list mapping
     private val years = mutableListOf<Int>()
     private var isTabSelectedScroll = false
+    private lateinit var yourBooksViewModel: YourBooksViewModel
 
     private val viewModelFactory by lazy {
         BookListViewModelFactory(
@@ -45,6 +48,8 @@ class LibraryFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val factory = YourBooksViewModelFactory()
+        yourBooksViewModel = ViewModelProvider(this, factory).get(YourBooksViewModel::class.java)
         loadData()
     }
 
@@ -76,7 +81,14 @@ class LibraryFragment : Fragment() {
                     bookList.clear()
                     bookList.addAll(bookItem)
                     bookList.sortByDescending { it.publishedChapterDate }
-                    ui()
+                    yourBooksViewModel.bookList.observe(viewLifecycleOwner){wishlistbook ->
+
+                        val wishlistedbookids = wishlistbook.map { it.id }
+                        bookList.forEach{ book ->
+                            book.isWishListed = wishlistedbookids.contains(book.id)
+                        }
+                        ui()
+                    }
                 }
                 is LibraryResultEvent.OnFailure ->{
 
@@ -91,7 +103,19 @@ class LibraryFragment : Fragment() {
     private fun ui() {
         setupTabsAndYearData()
 
-        libraryBookItemAdapter = LibraryBookItemAdapter(bookList)
+        libraryBookItemAdapter = LibraryBookItemAdapter(bookList){book ->
+            val position = bookList.indexOf(book)
+            if(position != -1) {
+                if (book.isWishListed) {
+                    book.isWishListed = !book.isWishListed
+                    yourBooksViewModel.delete(book.id)
+                } else {
+                    book.isWishListed = !book.isWishListed
+                    yourBooksViewModel.addBook(book)
+                }
+                libraryBookItemAdapter.notifyItemChanged(position)
+            }
+        }
         binding.bookRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.bookRecyclerView.adapter = libraryBookItemAdapter
 

@@ -28,12 +28,13 @@ class YourBooksViewModel(): ViewModel() {
 
     private fun convertToEntity(bookListDataModel: BooklistDataModel): BookEntity{
         return BookEntity(
-         id = bookListDataModel.id,
+            id = bookListDataModel.id,
             img = bookListDataModel.img,
             score = bookListDataModel.score,
             popularity = bookListDataModel.popularity,
             title = bookListDataModel.title,
-            publishedChapterDate = bookListDataModel.publishedChapterDate
+            publishedChapterDate = bookListDataModel.publishedChapterDate,
+            isWishListed = bookListDataModel.isWishListed
         )
     }
 

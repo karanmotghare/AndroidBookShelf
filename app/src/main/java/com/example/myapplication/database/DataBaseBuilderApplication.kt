@@ -15,6 +15,8 @@ class DataBaseBuilderApplication: Application() {
             applicationContext,
             BookDataBase::class.java,
             BookDataBase.NAME
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }

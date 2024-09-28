@@ -20,5 +20,7 @@ data class BooklistDataModel(
     val title : String,
 
     @SerializedName("publishedChapterDate")
-    val publishedChapterDate : Long
+    val publishedChapterDate : Long,
+
+    var isWishListed : Boolean = false
 )

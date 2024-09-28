@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.example.myapplication.database.dao.BookDao
 import com.example.myapplication.database.entitiy.BookEntity
 
-@Database(entities = [BookEntity::class], version = 1)
+@Database(entities = [BookEntity::class], version = 2)
 abstract class BookDataBase : RoomDatabase() {
 
     companion object{

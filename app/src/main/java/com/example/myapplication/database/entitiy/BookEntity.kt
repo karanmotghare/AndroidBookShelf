@@ -11,5 +11,6 @@ data class BookEntity (
     val score :  Double,
     val popularity :  Long,
     val title : String,
-    val publishedChapterDate : Long
+    val publishedChapterDate : Long,
+    var isWishListed : Boolean =false
 )

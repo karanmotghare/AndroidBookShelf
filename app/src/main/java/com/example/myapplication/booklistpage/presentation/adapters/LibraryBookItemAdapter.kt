@@ -8,7 +8,9 @@ import com.example.myapplication.R
 import com.example.myapplication.booklistpage.data.models.BooklistDataModel
 import com.example.myapplication.databinding.ItemBookLayoutBinding
 
-class LibraryBookItemAdapter(private val bookList: List<BooklistDataModel>) : RecyclerView.Adapter<LibraryBookItemAdapter.LibraryBookItemViewHolder>() {
+class LibraryBookItemAdapter(private val bookList: List<BooklistDataModel>,
+        private val onBookClicked : (BooklistDataModel) -> Unit
+    ) : RecyclerView.Adapter<LibraryBookItemAdapter.LibraryBookItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryBookItemViewHolder {
         val binding = ItemBookLayoutBinding.inflate(LayoutInflater.from(parent.context),
             parent,
@@ -31,6 +33,12 @@ class LibraryBookItemAdapter(private val bookList: List<BooklistDataModel>) : Re
     ) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(booklistDataModel: BooklistDataModel){
+            val heartIcon = if(booklistDataModel.isWishListed){
+                R.drawable.selected_heart
+            }else{
+                R.drawable.unselected_heart
+            }
+
             binding.bookTitle.text = booklistDataModel.title?:"No Title"
             binding.publishedDate.text = "Published on "+getYear(booklistDataModel.publishedChapterDate).toString()?:"date not available"
             Glide.with(itemView.context)
@@ -38,6 +46,10 @@ class LibraryBookItemAdapter(private val bookList: List<BooklistDataModel>) : Re
                 .placeholder(R.drawable.ic_book_icon)
                 .error(R.drawable.ic_book_icon)
                 .into(binding.bookIcon)
+            binding.wishlistBook.setImageResource(heartIcon)
+            binding.wishlistBook.setOnClickListener {
+                onBookClicked(booklistDataModel)
+            }
         }
 
     }
