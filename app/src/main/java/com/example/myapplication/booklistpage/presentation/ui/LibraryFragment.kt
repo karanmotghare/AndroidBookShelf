@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +25,7 @@ import com.example.myapplication.booklistpage.presentation.viewmodels.BookListVi
 import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModel
 import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModelFactory
 import com.example.myapplication.databinding.FragmentLibraryBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 
 class LibraryFragment : Fragment() {
@@ -33,6 +36,7 @@ class LibraryFragment : Fragment() {
     private val years = mutableListOf<Int>()
     private var isTabSelectedScroll = false
     private lateinit var yourBooksViewModel: YourBooksViewModel
+    private lateinit var loadingDialog: AlertDialog
 
     private val viewModelFactory by lazy {
         BookListViewModelFactory(
@@ -78,6 +82,7 @@ class LibraryFragment : Fragment() {
         viewModel.bookListData.observe(viewLifecycleOwner){result ->
             when(result){
                 is LibraryResultEvent.OnSuccess ->{
+                    loadingDialog.dismiss()
                     val bookItem = result.data
                     bookList.clear()
                     bookList.addAll(bookItem)
@@ -93,10 +98,11 @@ class LibraryFragment : Fragment() {
                     }
                 }
                 is LibraryResultEvent.OnFailure ->{
-
+                    loadingDialog.dismiss()
+                    Toast.makeText(requireContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
                 }
                 is LibraryResultEvent.OnLoading -> {
-
+                    showLoadingDialog()
                 }
             }
         }
@@ -218,6 +224,16 @@ class LibraryFragment : Fragment() {
             position += bookByYear[y]?.size ?: 0
         }
         return position
+    }
+
+    private fun showLoadingDialog(){
+        val builder = MaterialAlertDialogBuilder(requireContext())
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_loading, null)
+        builder.setView(dialogView)
+            .setCancelable(false)
+        loadingDialog = builder.create()
+        loadingDialog.show()
     }
 
 }
