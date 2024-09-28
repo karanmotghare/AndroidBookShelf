@@ -48,14 +48,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun ui() {
-        binding.goToLibrary.setOnClickListener {
+        binding.libraryLayout.setOnClickListener {
             val libraryFragment = LibraryFragment()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, libraryFragment)
                 .addToBackStack(null)
                 .commit()
         }
-        binding.yourBook.setOnClickListener{
+        binding.yourBookLayout.setOnClickListener{
             val yourBookFragment = YourBookFragment()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, yourBookFragment)
