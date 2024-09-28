@@ -67,6 +67,7 @@ class LibraryFragment : Fragment() {
         binding.topAppBar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
+        ui()
     }
 
     private fun loadData() {
@@ -87,7 +88,8 @@ class LibraryFragment : Fragment() {
                         bookList.forEach{ book ->
                             book.isWishListed = wishlistedbookids.contains(book.id)
                         }
-                        ui()
+                        libraryBookItemAdapter.notifyDataSetChanged()
+                        setupTabsAndYearData()
                     }
                 }
                 is LibraryResultEvent.OnFailure ->{
@@ -101,7 +103,6 @@ class LibraryFragment : Fragment() {
     }
 
     private fun ui() {
-        setupTabsAndYearData()
 
         libraryBookItemAdapter = LibraryBookItemAdapter(bookList){book ->
             val position = bookList.indexOf(book)
