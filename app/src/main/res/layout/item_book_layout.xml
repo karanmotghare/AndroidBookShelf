@@ -1,51 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="80.dp"
-            android:layout_height="80.dp"
-            android:src="@drawable/ic_book_icon"
-            />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Book Title"
-                android:textSize="24.sp"
-                android:textStyle="bold"
-                android:textColor="#303030"
-                />
+            <ImageView
+                android:id="@+id/book_icon"
+                android:layout_width="80.dp"
+                android:layout_height="80.dp"
+                android:src="@drawable/ic_book_icon" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4.5"
-                android:textSize="16.sp"
-                android:textStyle="bold"
-                android:textColor="#BFA100"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Published in 2022"
-                android:textSize="12.sp"
-                android:textStyle="normal"
-                android:textColor="#909090"/>
+                <TextView
+                    android:id="@+id/book_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book Title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#303030" />
+
+                <TextView
+                    android:id="@+id/book_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.5"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#BFA100" />
+
+                <TextView
+                    android:id="@+id/published_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Published in 2022"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:textColor="#909090" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
