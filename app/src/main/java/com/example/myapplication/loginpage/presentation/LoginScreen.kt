@@ -109,7 +109,11 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            authViewModel.login(emailAddress.text,password.text)
+            if(!emailAddress.text.isNullOrEmpty() && !password.text.isNullOrEmpty()){
+                authViewModel.login(emailAddress.text,password.text)
+            }else{
+                Toast.makeText(context, "No field should be blank", Toast.LENGTH_SHORT).show()
+            }
         }) {
             Text("Submit",
                 fontSize = 18.sp

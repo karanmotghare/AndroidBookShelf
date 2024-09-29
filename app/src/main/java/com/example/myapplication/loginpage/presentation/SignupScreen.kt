@@ -142,6 +142,9 @@ fun UiScreen(
     defaultCountry: UserIpLocationDataModel
 ) {
     var selectedCountry by remember { mutableStateOf(defaultCountry.country ?: "Select Country") }
+    val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$".toRegex()
+    val passwordRegex = "^(?=.*[0-9])(?=.*[!@#$%^&*()])(?=.*[a-z])(?=.*[A-Z]).{8,}$".toRegex()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -195,7 +198,16 @@ fun UiScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            authViewModel.signUp(emailAddress.text, password.text, selectedCountry)
+            if(emailRegex.matches(emailAddress.text) && passwordRegex.matches(password.text)){
+                authViewModel.signUp(emailAddress.text, password.text, selectedCountry)
+            }else if (!emailRegex.matches(emailAddress.text) && passwordRegex.matches(password.text)){
+                Toast.makeText(context, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+            }else if(emailRegex.matches(emailAddress.text) && !passwordRegex.matches(password.text)){
+                Toast.makeText(context, "Please enter a valid password", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(context, "Please enter a valid email address and password", Toast.LENGTH_SHORT).show()
+            }
+
         }) {
             Text("Sign up",
                 fontSize = 18.sp

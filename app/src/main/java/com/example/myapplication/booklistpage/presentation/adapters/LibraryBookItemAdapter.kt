@@ -50,6 +50,12 @@ class LibraryBookItemAdapter(private val bookList: List<BooklistDataModel>,
             binding.wishlistBook.setOnClickListener {
                 onBookClicked(booklistDataModel)
             }
+            binding.bookRating.text = getRating(booklistDataModel.score)
+        }
+
+        private fun getRating(score: Double): CharSequence {
+            val rating = ((score/ 100)*5)
+            return String.format("%.2f", rating)
         }
 
     }
