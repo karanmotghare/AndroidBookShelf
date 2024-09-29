@@ -4,9 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AuthViewModel : ViewModel(){
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
@@ -34,12 +37,25 @@ class AuthViewModel : ViewModel(){
             }
     }
 
-    fun signUp(email: String, password: String){
+    fun signUp(email: String, password: String, country: String){
         _authState.value = AuthState.Loading
         auth.createUserWithEmailAndPassword(email,password)
             .addOnCompleteListener { task ->
                 if(task.isSuccessful){
-                    _authState.value = AuthState.Authenticated
+                    val firebaseUser: FirebaseUser? = auth.currentUser
+
+                    firebaseUser?.let {
+                        val userId = it.uid
+                        val userMap = hashMapOf(
+                            "email" to email,
+                            "country" to country
+                        )
+                        firestore.collection("users").document(userId)
+                            .set(userMap)
+
+                        _authState.value = AuthState.Authenticated
+                    }
+
                 }else{
                     _authState.value = AuthState.Error(task.exception?.message?:"Something went wrong")
                 }

@@ -140,6 +140,8 @@ fun UiScreen(
     countries: List<CountryListDataModel>,
     defaultCountry: UserIpLocationDataModel
 ) {
+    var selectedCountry by remember { mutableStateOf(defaultCountry.country ?: "Select Country") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -183,12 +185,15 @@ fun UiScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CountryDropDown(commonModifier, countries, defaultCountry.country)
+        CountryDropDown(commonModifier = commonModifier,
+            countries = countries,
+            country = defaultCountry.country,
+            onCountrySelected = {selectedCountry = it})
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            authViewModel.signUp(emailAddress.text,password.text)
+            authViewModel.signUp(emailAddress.text, password.text, selectedCountry)
         }) {
             Text("Sign up",
                 fontSize = 18.sp
@@ -207,7 +212,8 @@ fun UiScreen(
 fun CountryDropDown(
     commonModifier: Modifier,
     countries: List<CountryListDataModel>,
-    country: String
+    country: String,
+    onCountrySelected: (String) -> Unit
 ) {
 //    val countries = listOf("United States", "Canada", "Germany", "India", "Australia", "Japan", "France")
     var expanded by remember { mutableStateOf(false) }
@@ -238,6 +244,7 @@ fun CountryDropDown(
                     onClick = {
                         selectedCountry = country.country
                         expanded = false
+                        onCountrySelected(country.country)
                     }
                 )
             }
