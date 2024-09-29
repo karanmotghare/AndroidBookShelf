@@ -15,6 +15,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
+import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModel
+import com.example.myapplication.booklistpage.presentation.viewmodels.YourBooksViewModelFactory
 import com.example.myapplication.databinding.FragmentHomeBinding
 import com.example.myapplication.loginpage.viewmodels.AuthState
 import com.example.myapplication.loginpage.viewmodels.AuthViewModel
@@ -24,9 +26,12 @@ import com.google.android.material.appbar.MaterialToolbar
 class HomeFragment : Fragment() {
     private lateinit var authViewModel: AuthViewModel
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var yourBooksViewModel: YourBooksViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val factory = YourBooksViewModelFactory()
+        yourBooksViewModel = ViewModelProvider(this, factory).get(YourBooksViewModel::class.java)
         setHasOptionsMenu(true)
     }
 
@@ -92,6 +97,7 @@ class HomeFragment : Fragment() {
     private fun logout(){
         val intent = Intent(requireActivity(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        yourBooksViewModel.deleteAll()
         startActivity(intent)
         activity?.finish()
     }

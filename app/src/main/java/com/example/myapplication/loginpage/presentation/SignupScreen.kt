@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -178,6 +179,7 @@ fun UiScreen(
             value = password,
             onValueChange = onPasswordChange,
             modifier = commonModifier,
+            visualTransformation = PasswordVisualTransformation(),
             label = {
                 Text(text = "Password")
             }

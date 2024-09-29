@@ -179,8 +179,13 @@ class LibraryFragment : Fragment() {
     }
 
     private fun setupTabsAndYearData(){
+        val layoutManager = binding.bookRecyclerView.layoutManager as LinearLayoutManager
+        val currentScrollPosition = layoutManager.findFirstVisibleItemPosition()
+
         bookByYear.clear()
         years.clear()
+
+        binding.tabLayoutYears.removeAllTabs()
 
         bookList.forEach{ book ->
             val year = getYear(book.publishedChapterDate)
@@ -196,6 +201,10 @@ class LibraryFragment : Fragment() {
         years.sortDescending()
         years.forEach{ year->
             binding.tabLayoutYears.addTab(binding.tabLayoutYears.newTab().setText(year.toString()))
+        }
+
+        if (currentScrollPosition != RecyclerView.NO_POSITION) {
+            binding.bookRecyclerView.scrollToPosition(currentScrollPosition)
         }
 
     }

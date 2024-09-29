@@ -26,6 +26,12 @@ class YourBooksViewModel(): ViewModel() {
         }
     }
 
+    fun deleteAll(){
+        viewModelScope.launch {
+            bookDao.deleteAllBook()
+        }
+    }
+
     private fun convertToEntity(bookListDataModel: BooklistDataModel): BookEntity{
         return BookEntity(
             id = bookListDataModel.id,
