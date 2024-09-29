@@ -1,5 +1,6 @@
 package com.example.myapplication.loginpage.presentation
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,20 +40,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.LibraryResultEvent
 import com.example.myapplication.R
+import com.example.myapplication.loginpage.data.models.CountryListDataModel
 import com.example.myapplication.loginpage.viewmodels.AuthState
 import com.example.myapplication.loginpage.viewmodels.AuthViewModel
+import com.example.myapplication.loginpage.viewmodels.CountryListViewModel
 
 @Composable
-fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
+fun SignupScreen(navController: NavController, authViewModel: AuthViewModel, countryListViewModel: CountryListViewModel) {
     var emailAddress by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
+    val countryListState by countryListViewModel.countryListData.observeAsState()
 
     LaunchedEffect(authState.value) {
         when(authState.value){
@@ -60,6 +66,53 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
         }
     }
 
+    LaunchedEffect(Unit) {
+        countryListViewModel.getCountryListData()
+    }
+
+    when(val result = countryListState){
+        is LibraryResultEvent.OnFailure -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Something went wrong")
+            }
+        }
+        LibraryResultEvent.OnLoading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        is LibraryResultEvent.OnSuccess -> {
+            Log.d("SignupScreen","data : ${result.data}")
+            UiScreen(
+                emailAddress = emailAddress,
+                onEmailChange = {emailAddress = it},
+                password = password,
+                onPasswordChange = {password = it},
+                authViewModel = authViewModel,
+                navController = navController,
+                countries = result.data
+            )
+        }
+        else ->{
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Please wait...")
+            }
+        }
+    }
+
+
+}
+
+@Composable
+fun UiScreen(
+    emailAddress: TextFieldValue,
+    onEmailChange: (TextFieldValue) -> Unit,
+    password: TextFieldValue,
+    onPasswordChange: (TextFieldValue) -> Unit,
+    authViewModel: AuthViewModel,
+    navController: NavController,
+    countries: List<CountryListDataModel>
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +136,7 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
 
         OutlinedTextField(
             value = emailAddress,
-            onValueChange = {emailAddress = it},
+            onValueChange = onEmailChange,
             modifier = commonModifier,
             label = {
                 Text(text = "Email address")
@@ -94,7 +147,7 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = {password = it},
+            onValueChange = onPasswordChange,
             modifier = commonModifier,
             label = {
                 Text(text = "Password")
@@ -103,7 +156,7 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        phone(commonModifier)
+        CountryDropDown(commonModifier, countries)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -120,7 +173,44 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel) {
         }) {
             Text(text = "Have an account, Login")
         }
+    }
+}
 
+@Composable
+fun CountryDropDown(commonModifier: Modifier, countries: List<CountryListDataModel>) {
+//    val countries = listOf("United States", "Canada", "Germany", "India", "Australia", "Japan", "France")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCountry by remember { mutableStateOf("Select Country") }
+
+    Column {
+        OutlinedTextField(
+            value = selectedCountry,
+            onValueChange = { },
+            readOnly = true,
+            label = { Text("Country") },
+            modifier = commonModifier.clickable { expanded = true },
+            trailingIcon = {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Dropdown")
+                }
+            }
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            countries.forEach { country ->
+                DropdownMenuItem(
+                    text = {Text(country.country)},
+                    onClick = {
+                        selectedCountry = country.country
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }
 
