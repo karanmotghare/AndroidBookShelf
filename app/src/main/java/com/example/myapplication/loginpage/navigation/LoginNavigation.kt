@@ -13,9 +13,10 @@ import com.example.myapplication.loginpage.presentation.LoginScreen
 import com.example.myapplication.loginpage.presentation.SignupScreen
 import com.example.myapplication.loginpage.viewmodels.AuthViewModel
 import com.example.myapplication.loginpage.viewmodels.CountryListViewModel
+import com.example.myapplication.loginpage.viewmodels.UserIpLocationViewModel
 
 @Composable
-fun LoginNavigation(authViewModel: AuthViewModel, countryListViewModel: CountryListViewModel) {
+fun LoginNavigation(authViewModel: AuthViewModel, countryListViewModel: CountryListViewModel, userIpLocationViewModel: UserIpLocationViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -24,7 +25,7 @@ fun LoginNavigation(authViewModel: AuthViewModel, countryListViewModel: CountryL
             LoginScreen(navController, authViewModel)
         }
         composable("signup") {
-            SignupScreen(navController, authViewModel, countryListViewModel)
+            SignupScreen(navController, authViewModel, countryListViewModel, userIpLocationViewModel)
         }
         composable("home") {
             val intent = Intent(context, BooklistActivity::class.java)

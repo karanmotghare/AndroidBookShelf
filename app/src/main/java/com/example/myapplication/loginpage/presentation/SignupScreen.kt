@@ -46,17 +46,20 @@ import androidx.navigation.NavController
 import com.example.myapplication.LibraryResultEvent
 import com.example.myapplication.R
 import com.example.myapplication.loginpage.data.models.CountryListDataModel
+import com.example.myapplication.loginpage.data.models.UserIpLocationDataModel
 import com.example.myapplication.loginpage.viewmodels.AuthState
 import com.example.myapplication.loginpage.viewmodels.AuthViewModel
 import com.example.myapplication.loginpage.viewmodels.CountryListViewModel
+import com.example.myapplication.loginpage.viewmodels.UserIpLocationViewModel
 
 @Composable
-fun SignupScreen(navController: NavController, authViewModel: AuthViewModel, countryListViewModel: CountryListViewModel) {
+fun SignupScreen(navController: NavController, authViewModel: AuthViewModel, countryListViewModel: CountryListViewModel, userIpLocationViewModel: UserIpLocationViewModel) {
     var emailAddress by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
     val countryListState by countryListViewModel.countryListData.observeAsState()
+    val userIpState by userIpLocationViewModel.ipLocationData.observeAsState()
 
     LaunchedEffect(authState.value) {
         when(authState.value){
@@ -68,6 +71,7 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel, cou
 
     LaunchedEffect(Unit) {
         countryListViewModel.getCountryListData()
+        userIpLocationViewModel.getIpLocationData()
     }
 
     when(val result = countryListState){
@@ -83,15 +87,37 @@ fun SignupScreen(navController: NavController, authViewModel: AuthViewModel, cou
         }
         is LibraryResultEvent.OnSuccess -> {
             Log.d("SignupScreen","data : ${result.data}")
-            UiScreen(
-                emailAddress = emailAddress,
-                onEmailChange = {emailAddress = it},
-                password = password,
-                onPasswordChange = {password = it},
-                authViewModel = authViewModel,
-                navController = navController,
-                countries = result.data
-            )
+
+            when(val userIp = userIpState){
+                is LibraryResultEvent.OnFailure -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Something went wrong")
+                    }
+                }
+                LibraryResultEvent.OnLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is LibraryResultEvent.OnSuccess -> {
+                    UiScreen(
+                        emailAddress = emailAddress,
+                        onEmailChange = {emailAddress = it},
+                        password = password,
+                        onPasswordChange = {password = it},
+                        authViewModel = authViewModel,
+                        navController = navController,
+                        countries = result.data,
+                        defaultCountry = userIp.data
+                    )
+                }
+                else -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Please wait...")
+                    }
+                }
+            }
+
         }
         else ->{
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -111,7 +137,8 @@ fun UiScreen(
     onPasswordChange: (TextFieldValue) -> Unit,
     authViewModel: AuthViewModel,
     navController: NavController,
-    countries: List<CountryListDataModel>
+    countries: List<CountryListDataModel>,
+    defaultCountry: UserIpLocationDataModel
 ) {
     Column(
         modifier = Modifier
@@ -156,7 +183,7 @@ fun UiScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        CountryDropDown(commonModifier, countries)
+        CountryDropDown(commonModifier, countries, defaultCountry.country)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -177,10 +204,14 @@ fun UiScreen(
 }
 
 @Composable
-fun CountryDropDown(commonModifier: Modifier, countries: List<CountryListDataModel>) {
+fun CountryDropDown(
+    commonModifier: Modifier,
+    countries: List<CountryListDataModel>,
+    country: String
+) {
 //    val countries = listOf("United States", "Canada", "Germany", "India", "Australia", "Japan", "France")
     var expanded by remember { mutableStateOf(false) }
-    var selectedCountry by remember { mutableStateOf("Select Country") }
+    var selectedCountry by remember { mutableStateOf(country ?: "Select Country") }
 
     Column {
         OutlinedTextField(
