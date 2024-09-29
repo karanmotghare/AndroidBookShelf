@@ -110,7 +110,9 @@ class LibraryFragment : Fragment() {
 
     private fun ui() {
 
+        //setting up adapter to fill book data in recycler view
         libraryBookItemAdapter = LibraryBookItemAdapter(bookList){book ->
+            //click handling when book wishListed
             val position = bookList.indexOf(book)
             if(position != -1) {
                 if (book.isWishListed) {
@@ -126,6 +128,7 @@ class LibraryFragment : Fragment() {
         binding.bookRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.bookRecyclerView.adapter = libraryBookItemAdapter
 
+        //ensure correct tab is selected when scrolling through recycler view
         binding.bookRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -203,6 +206,7 @@ class LibraryFragment : Fragment() {
             binding.tabLayoutYears.addTab(binding.tabLayoutYears.newTab().setText(year.toString()))
         }
 
+        //to maintain item position since data is refreshing
         if (currentScrollPosition != RecyclerView.NO_POSITION) {
             binding.bookRecyclerView.scrollToPosition(currentScrollPosition)
         }

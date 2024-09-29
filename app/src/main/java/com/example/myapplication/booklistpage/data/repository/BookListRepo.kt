@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 
+//Flow emit multiple values this is particularly useful for handling data that can change or updated
+//With Flow, your UI can react to these updates without blocking the main thread
 class BookListRepo: IBookListRepo {
     override suspend fun getBookListData(): Flow<LibraryResultEvent<List<BooklistDataModel>>> = flow {
         emit(LibraryResultEvent.OnLoading)
